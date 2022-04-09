@@ -2,20 +2,16 @@ const fs = require("fs");
 const chalk = require("chalk");
 const fileName = "notes.json";
 
-const getNotes = () => {
-  return "notes...";
-};
-
 // ADDING NOTE
 const addNote = (title, body) => {
   const notes = loadNotes();
-  const duplicateNotes = notes.filter(
-    (note) =>
-      // if return is false note is removed from array, if true it stays
-      note.title === title
-  );
+  const duplicateNote = notes.find((note) => note.title === title);
 
-  if (duplicateNotes.length === 0) {
+  // to trigger: node inspect app.js add --title="Title" --body="Body"
+  // to test type ws://127... link in browser and open inspector debugger
+  //debugger;
+
+  if (!duplicateNote /* duplicateNote === undefined */) {
     notes.push({
       title: title,
       body: body,
@@ -33,13 +29,40 @@ const removeNote = (title) => {
   // tried using a hasBeenRemoved boolean to check
   // we can access it in notes.filter with this.hasBeenRemoved but
   // the change does not transfer out of the scope so hasBeenRemoved remains unchanged - good lesson
-  const remainingNotes = notes.filter((note) => note.title !== title);
+  const remainingNotes = notes.filter(
+    (
+      note // if return is false note is removed from array, if true it stays
+    ) => note.title !== title
+  );
 
   if (remainingNotes.length != notes.length) {
     saveNotes(remainingNotes);
     console.log(chalk.green.inverse.bold("Note removed"));
   } else {
     console.log(chalk.red.inverse.bold(`No note with the title ${title}`));
+  }
+};
+
+// LIST NOTES
+const listNotes = () => {
+  const notes = loadNotes();
+  console.log(chalk.white.inverse.bold("Your Notes"));
+  notes.map((note) =>
+    console.log(chalk.grey.inverse.italic(`- ${note.title}`))
+  );
+};
+
+// READ NOTE
+const readNote = (title) => {
+  const notes = loadNotes();
+
+  const duplicateNote = notes.find((note) => note.title === title);
+
+  if (duplicateNote /* duplicateNote !== undefined */) {
+    console.log(chalk.green.inverse.bold(title));
+    console.log(duplicateNote.body);
+  } else {
+    console.log(chalk.red.inverse.bold("No note with matching title found!"));
   }
 };
 
@@ -60,8 +83,9 @@ const loadNotes = () => {
 };
 
 module.exports = {
-  getNotes: getNotes,
   // if name is the same we do not need to do name: name
   addNote,
   removeNote: removeNote,
+  listNotes: listNotes,
+  readNote: readNote,
 };
