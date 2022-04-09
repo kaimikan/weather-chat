@@ -1,7 +1,8 @@
 // to run node app.js or nodemon app.js (nodemon is installed as a global package) for live sever
+// notice difference in syntax between npm packages and local files
 const chalk = require("chalk");
 const yargs = require("yargs");
-const getNotes = require("./notes");
+const notes = require("./notes");
 
 // run with a command and argument example: node app.js add --title="Sample Title" --body="Sample Body"
 
@@ -25,9 +26,7 @@ yargs.command({
     },
   },
   handler: (argv) => {
-    console.log(
-      `Adding a new note: \nTitle: ${argv.title}\nBody: ${argv.body}`
-    );
+    notes.addNote(argv.title, argv.body);
   },
 });
 
@@ -35,8 +34,15 @@ yargs.command({
 yargs.command({
   command: "remove",
   describe: "Remove a note",
-  handler: () => {
-    console.log("Removing a note");
+  builder: {
+    title: {
+      describe: "Note title",
+      demandOption: true,
+      type: "string",
+    },
+  },
+  handler: (argv) => {
+    notes.removeNote(argv.title);
   },
 });
 
