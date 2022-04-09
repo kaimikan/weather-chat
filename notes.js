@@ -2,17 +2,18 @@ const fs = require("fs");
 const chalk = require("chalk");
 const fileName = "notes.json";
 
-const getNotes = function () {
+const getNotes = () => {
   return "notes...";
 };
 
 // ADDING NOTE
 const addNote = (title, body) => {
   const notes = loadNotes();
-  const duplicateNotes = notes.filter((note) => {
-    // if return is false note is removed from array, if true it stays
-    return note.title === title;
-  });
+  const duplicateNotes = notes.filter(
+    (note) =>
+      // if return is false note is removed from array, if true it stays
+      note.title === title
+  );
 
   if (duplicateNotes.length === 0) {
     notes.push({
@@ -29,9 +30,10 @@ const addNote = (title, body) => {
 // REMOVING NOTE
 const removeNote = (title) => {
   const notes = loadNotes();
-  const remainingNotes = notes.filter((note) => {
-    return note.title !== title;
-  });
+  // tried using a hasBeenRemoved boolean to check
+  // we can access it in notes.filter with this.hasBeenRemoved but
+  // the change does not transfer out of the scope so hasBeenRemoved remains unchanged - good lesson
+  const remainingNotes = notes.filter((note) => note.title !== title);
 
   if (remainingNotes.length != notes.length) {
     saveNotes(remainingNotes);
@@ -41,6 +43,7 @@ const removeNote = (title) => {
   }
 };
 
+// UTILITY
 const saveNotes = (notes) => {
   dataJSON = JSON.stringify(notes);
   fs.writeFileSync(fileName, dataJSON);
