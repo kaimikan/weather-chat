@@ -7,19 +7,18 @@ const location = process.argv[2];
 if (location) {
   console.log(`${location} Forecast: `);
 
-  geocode(location, (error, geocodeData) => {
+  geocode(location, (error, { latitude, longitude, location } = {}) => {
     // the return stop the rest of the function
     if (error) return console.log("Error: ", error);
 
-    //console.log("Data: ", geocodeData);
     forecast(
-      geocodeData.latitude,
-      geocodeData.longitude,
-      (error, forecastData) => {
+      latitude,
+      longitude,
+      (error, { description, temperature, feelslike } = {}) => {
         if (error) return console.log("Error", error);
 
         console.log(
-          `${forecastData.description}, Temp: ${forecastData.temperature}, Feels like: ${forecastData.feelslike}`
+          `${location} - ${description}, Temp: ${temperature}, Feels like: ${feelslike}`
         );
       }
     );
