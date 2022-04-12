@@ -1,19 +1,29 @@
-const request = require("request");
+const geocode = require("./utils/geocode");
+const forecast = require("./utils/forecast");
 
-const url =
-  "http://api.weatherstack.com/current?access_key=d6686c95d4b2e1f854427346ddc27e2c&query=37.8267,-122.4233";
+// node app.js Deventer
+const location = process.argv[2];
 
-const geocodingUrl =
-  "https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=pk.eyJ1Ijoia2FpbWlrYW4iLCJhIjoiY2wxdDd4cTdmMDRheTNqcW9ieHNjejBxbSJ9.zX2zCqy5PiLLtNKwLiwe_A";
+if (location) {
+  console.log(`${location} Forecast: `);
 
-request({ url: url, json: true }, (error, response) => {
-  console.log(
-    `${response.body.current.weather_descriptions[0]} it is currently ${response.body.current.temperature} degrees but feels like ${response.body.current.feelslike} degrees`
-  );
-});
+  geocode(location, (error, geocodeData) => {
+    // the return stop the rest of the function
+    if (error) return console.log("Error: ", error);
 
-request({ url: geocodingUrl, json: true }, (error, response) => {
-  const latitude = response.body.features[0].center[1];
-  const longitude = response.body.features[0].center[0];
-  console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-});
+    //console.log("Data: ", geocodeData);
+    forecast(
+      geocodeData.latitude,
+      geocodeData.longitude,
+      (error, forecastData) => {
+        if (error) return console.log("Error", error);
+
+        console.log(
+          `${forecastData.description}, Temp: ${forecastData.temperature}, Feels like: ${forecastData.feelslike}`
+        );
+      }
+    );
+  });
+} else {
+  console.log("Provide location to get a forecast.");
+}
